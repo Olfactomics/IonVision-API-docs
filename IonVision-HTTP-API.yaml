@@ -2,6 +2,8 @@ swagger: "2.0"
 info:
   description: |
     The IonVision HTTP API definition.
+
+    For more informaton about the IonVision API, see the full repository https://github.com/Olfactomics/IonVision-API-docs.
   version: "0.3.4"
   title: "IonVision HTTP API"
 basePath: "/api"

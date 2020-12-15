@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "The IonVision HTTP API definition.\n",
+    "description": "The IonVision HTTP API definition.\n\nFor more informaton about the IonVision API, see the full repository https://github.com/Olfactomics/IonVision-API-docs.\n",
     "version": "0.3.4",
     "title": "IonVision HTTP API"
   },
