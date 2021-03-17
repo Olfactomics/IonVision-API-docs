@@ -301,11 +301,31 @@ paths:
           schema:
             $ref: "#/definitions/standardResponse"
         409:
-          description: "A ongoing scan is preventing changing the current parameter preset. Alternatively some other blocking operation is ongoing. An another parameter preset or a project being set up to the RTM could also cause this repsonse."
+          description: "An ongoing scan is preventing changing the current parameter preset. Alternatively some other blocking operation is ongoing. An another parameter preset or a project being set up to the RTM could also cause this response."
           schema:
             $ref: "#/definitions/standardResponse"
         422:
           description: "The given parameter doesn't exists in the current project or at all. Alternatively the request body was malformed."
+          schema:
+            $ref: "#/definitions/standardResponse"
+  /currentParameter/preload:
+    post:
+      tags:
+      - "Parameters"
+      summary: "Preload the current parameter preset so environmental parameters can take effect before a scan is started."
+      produces:
+      - "application/json"
+      responses:
+        201:
+          description: "The parameter preset is being preloaded. This will take a second."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        409:
+          description: "An ongoing scan is preventing preloading the current parameter preset. Alternatively some other blocking operation is ongoing. A parameter preset or a project being set up to the RTM could also cause this response."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        422:
+          description: "The request body was malformed."
           schema:
             $ref: "#/definitions/standardResponse"
   /parameter:
@@ -751,7 +771,7 @@ paths:
           schema:
             $ref: "#/definitions/parameterSaveError"
 
-  /controller/sampleFlow:
+  /controller/sample/flow:
     get:
       tags:
       - "Controller adjustment"
@@ -762,7 +782,7 @@ paths:
         200:
           description: "The current sample flow adjustment values."
           schema:
-            $ref: "#/definitions/controllerSetpointResponse"
+            $ref: "#/definitions/controllerMinMaxResponse"
         423:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
@@ -781,7 +801,7 @@ paths:
         description: "One or more sample flow adjustment values to change"
         required: true
         schema:
-          $ref: "#/definitions/controllerSetpoint"
+          $ref: "#/definitions/controllerMinMax"
       responses:
         200:
           description: "The values were changed successfully."
@@ -795,7 +815,7 @@ paths:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
             $ref: "#/definitions/standardResponse"
-  /controller/sampleFlow/pid:
+  /controller/sample/flow/pid:
     get:
       tags:
       - "Controller adjustment"
@@ -839,7 +859,7 @@ paths:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
             $ref: "#/definitions/standardResponse"
-  /controller/sampleFlow/directControl:
+  /controller/sample/flow/directControl:
     get:
       tags:
       - "Controller adjustment"
@@ -875,18 +895,18 @@ paths:
           description: "The given values were malformed."
           schema:
             $ref: "#/definitions/controllerError"
-  /controller/circulatingGasFlow:
+  /controller/sensor/flow:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get current circulating gas flow adjustment values."
+      summary: "Get current sensor flow adjustment values."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current circulating gas flow adjustment values."
+          description: "The current sensor flow adjustment values."
           schema:
-            $ref: "#/definitions/controllerSetpointResponse"
+            $ref: "#/definitions/controllerMinMaxResponse"
         423:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
@@ -894,7 +914,7 @@ paths:
     put:
       tags:
       - "Controller adjustment"
-      summary: "Change the current circulating gas flow adjustment values."
+      summary: "Change the current sensor flow adjustment values."
       consumes:
       - "application/json"
       produces:
@@ -902,10 +922,10 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "One or more circulating gas flow adjustment values to change"
+        description: "One or more sensor flow adjustment values to change"
         required: true
         schema:
-          $ref: "#/definitions/controllerSetpoint"
+          $ref: "#/definitions/controllerMinMax"
       responses:
         200:
           description: "The values were changed successfully."
@@ -919,16 +939,16 @@ paths:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
             $ref: "#/definitions/standardResponse"
-  /controller/circulatingGasFlow/pid:
+  /controller/sensor/flow/pid:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get current circulating gas flow pid controller values."
+      summary: "Get current sensor flow pid controller values."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current circulating gas flow pid controller values."
+          description: "The current sensor flow pid controller values."
           schema:
             $ref: "#/definitions/controllerPid"
         423:
@@ -938,7 +958,7 @@ paths:
     put:
       tags:
       - "Controller adjustment"
-      summary: "Change the current circulating gas flow pid controller values."
+      summary: "Change the current sensor flow pid controller values."
       consumes:
       - "application/json"
       produces:
@@ -946,7 +966,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "One or more circulating gas flow pid controller values to change."
+        description: "One or more sensor flow pid controller values to change."
         required: true
         schema:
           $ref: "#/definitions/controllerPid"
@@ -963,22 +983,22 @@ paths:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
             $ref: "#/definitions/standardResponse"
-  /controller/circulatingGasFlow/directControl:
+  /controller/sensor/flow/directControl:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get whether the circulating gas flow pump is directly adjusted."
+      summary: "Get whether the sensor flow pump is directly adjusted."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current circulating gas flow direct adjustment status"
+          description: "The current sensor flow direct adjustment status"
           schema:
             $ref: "#/definitions/controllerDirectControl"
     put:
       tags:
       - "Controller adjustment"
-      summary: "Directly adjust the circulating gas flow pumps duty cycle."
+      summary: "Directly adjust the sensor flow pumps duty cycle."
       consumes:
       - "application/json"
       produces:
@@ -999,18 +1019,18 @@ paths:
           description: "The given values were malformed."
           schema:
             $ref: "#/definitions/controllerError"
-  /controller/circulatingGasTemperature:
+  /controller/sensor/heaterTemperature:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get current circulating gas temperature adjustment values."
+      summary: "Get current sensor heater temperature adjustment values."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current temperature adjustment values."
+          description: "The current heater temperature adjustment values."
           schema:
-            $ref: "#/definitions/controllerSetpointResponse"
+            $ref: "#/definitions/controllerMinMaxResponse"
         423:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
@@ -1018,7 +1038,7 @@ paths:
     put:
       tags:
       - "Controller adjustment"
-      summary: "Change the current circulating gas temperature adjustment values."
+      summary: "Change the current sensor heater temperature adjustment values."
       consumes:
       - "application/json"
       produces:
@@ -1026,10 +1046,10 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "One or more temperature adjustment values to change"
+        description: "One or more heater temperature adjustment values to change"
         required: true
         schema:
-          $ref: "#/definitions/controllerSetpoint"
+          $ref: "#/definitions/controllerMinMax"
       responses:
         200:
           description: "The values were changed successfully."
@@ -1043,16 +1063,16 @@ paths:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
             $ref: "#/definitions/standardResponse"
-  /controller/circulatingGasTemperature/pid:
+  /controller/sensor/heaterTemperature/pid:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get current circulating gas temperature pid controller values."
+      summary: "Get current sensor heater temperature pid controller values."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current temperature pid controller values."
+          description: "The current heater temperature pid controller values."
           schema:
             $ref: "#/definitions/controllerPid"
         423:
@@ -1062,7 +1082,7 @@ paths:
     put:
       tags:
       - "Controller adjustment"
-      summary: "Change the current circulating gas temperature pid controller values."
+      summary: "Change the current sensor heater temperature pid controller values."
       consumes:
       - "application/json"
       produces:
@@ -1070,7 +1090,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "One or more temperature pid controller values to change."
+        description: "One or more heater temperature pid controller values to change."
         required: true
         schema:
           $ref: "#/definitions/controllerPid"
@@ -1087,22 +1107,22 @@ paths:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
             $ref: "#/definitions/standardResponse"
-  /controller/circulatingGasTemperature/directControl:
+  /controller/sensor/heaterTemperature/directControl:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get whether the circulating gas temperature is directly adjusted."
+      summary: "Get whether the sensor heater temperature is directly adjusted."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current circulating gas temperature direct adjustment status"
+          description: "The current sensor heater temperature direct adjustment status"
           schema:
             $ref: "#/definitions/controllerDirectControl"
     put:
       tags:
       - "Controller adjustment"
-      summary: "Directly adjust the circulating gas temperature heaters duty cycle."
+      summary: "Directly adjust the sensor heater temperature heaters duty cycle."
       consumes:
       - "application/json"
       produces:
@@ -1123,7 +1143,144 @@ paths:
           description: "The given values were malformed."
           schema:
             $ref: "#/definitions/controllerError"
-  /controller/sampleTemperature:
+  /controller/sample/heaterTemperature:
+    get:
+      tags:
+      - "Controller adjustment"
+      summary: "Get current sample gas heater temperature adjustment values."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "The current heater temperature adjustment values."
+          schema:
+            $ref: "#/definitions/controllerMinMaxResponse"
+        423:
+          description: "The resource is not accessible, because direct control has been enabled."
+          schema:
+            $ref: "#/definitions/standardResponse"
+    put:
+      tags:
+      - "Controller adjustment"
+      summary: "Change the sample sensor heater temperature adjustment values."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "One or more heater temperature adjustment values to change"
+        required: true
+        schema:
+          $ref: "#/definitions/controllerMinMax"
+      responses:
+        200:
+          description: "The values were changed successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        422:
+          description: "The given values were malformed."
+          schema:
+            $ref: "#/definitions/controllerError"
+        423:
+          description: "The resource is not accessible, because direct control has been enabled."
+          schema:
+            $ref: "#/definitions/standardResponse"
+  /controller/sample/heaterTemperature/pid:
+    get:
+      tags:
+      - "Controller adjustment"
+      summary: "Get current sample gas heater temperature pid controller values."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "The current heater temperature pid controller values."
+          schema:
+            $ref: "#/definitions/controllerPid"
+        423:
+          description: "The resource is not accessible, because direct control has been enabled."
+          schema:
+            $ref: "#/definitions/standardResponse"
+    put:
+      tags:
+      - "Controller adjustment"
+      summary: "Change the current sample gas heater temperature pid controller values."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "One or more heater temperature pid controller values to change."
+        required: true
+        schema:
+          $ref: "#/definitions/controllerPid"
+      responses:
+        200:
+          description: "The values were changed successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        422:
+          description: "The given values were malformed."
+          schema:
+            $ref: "#/definitions/controllerError"
+        423:
+          description: "The resource is not accessible, because direct control has been enabled."
+          schema:
+            $ref: "#/definitions/standardResponse"
+  /controller/sample/heaterTemperature/directControl:
+    get:
+      tags:
+      - "Controller adjustment"
+      summary: "Get whether the sample heater temperature is directly adjusted."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "The current sample heater temperature direct adjustment status"
+          schema:
+            $ref: "#/definitions/controllerDirectControl"
+    put:
+      tags:
+      - "Controller adjustment"
+      summary: "Directly adjust the sample heater temperature heaters duty cycle."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The new direct adjustment settings. If enabled is false, there is no need for the duty cycle value."
+        required: true
+        schema:
+          $ref: "#/definitions/controllerDirectControl"
+      responses:
+        200:
+          description: "The values were changed successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        422:
+          description: "The given values were malformed."
+          schema:
+            $ref: "#/definitions/controllerError"
+
+
+
+
+
+
+
+
+
+
+
+
+
+/controller/sample/temperature:
     get:
       tags:
       - "Controller adjustment"
@@ -1134,7 +1291,7 @@ paths:
         200:
           description: "The current temperature adjustment values."
           schema:
-            $ref: "#/definitions/controllerSetpointResponse"
+            $ref: "#/definitions/controllerMinMaxResponse"
         423:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
@@ -1142,7 +1299,7 @@ paths:
     put:
       tags:
       - "Controller adjustment"
-      summary: "Change the sample circulating gas temperature adjustment values."
+      summary: "Change the sample sensor temperature adjustment values."
       consumes:
       - "application/json"
       produces:
@@ -1153,7 +1310,7 @@ paths:
         description: "One or more temperature adjustment values to change"
         required: true
         schema:
-          $ref: "#/definitions/controllerSetpoint"
+          $ref: "#/definitions/controllerMinMax"
       responses:
         200:
           description: "The values were changed successfully."
@@ -1167,18 +1324,25 @@ paths:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
             $ref: "#/definitions/standardResponse"
-  /controller/sampleTemperature/pid:
+    options:
+      tags:
+      - "Controller adjustment"
+      summary: "Respond to AJAX request CORS information request."
+      responses:
+        200:
+          description: "Send CORS info innheader."
+  /controller/sensor/temperature:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get current sample gas temperature pid controller values."
+      summary: "Get current sensor temperature adjustment values."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current temperature pid controller values."
+          description: "The current temperature adjustment values."
           schema:
-            $ref: "#/definitions/controllerPid"
+            $ref: "#/definitions/controllerMinMaxResponse"
         423:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
@@ -1186,7 +1350,7 @@ paths:
     put:
       tags:
       - "Controller adjustment"
-      summary: "Change the current sample gas temperature pid controller values."
+      summary: "Change the current sensor temperature adjustment values."
       consumes:
       - "application/json"
       produces:
@@ -1194,10 +1358,10 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "One or more temperature pid controller values to change."
+        description: "One or more temperature adjustment values to change"
         required: true
         schema:
-          $ref: "#/definitions/controllerPid"
+          $ref: "#/definitions/controllerMinMax"
       responses:
         200:
           description: "The values were changed successfully."
@@ -1211,43 +1375,14 @@ paths:
           description: "The resource is not accessible, because direct control has been enabled."
           schema:
             $ref: "#/definitions/standardResponse"
-  /controller/sampleTemperature/directControl:
-    get:
+    options:
       tags:
       - "Controller adjustment"
-      summary: "Get whether the sample temperature is directly adjusted."
-      produces:
-      - "application/json"
+      summary: "Respond to AJAX request CORS information request."
       responses:
         200:
-          description: "The current sample temperature direct adjustment status"
-          schema:
-            $ref: "#/definitions/controllerDirectControl"
-    put:
-      tags:
-      - "Controller adjustment"
-      summary: "Directly adjust the sample temperature heaters duty cycle."
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "The new direct adjustment settings. If enabled is false, there is no need for the duty cycle value."
-        required: true
-        schema:
-          $ref: "#/definitions/controllerDirectControl"
-      responses:
-        200:
-          description: "The values were changed successfully."
-          schema:
-            $ref: "#/definitions/standardResponse"
-        422:
-          description: "The given values were malformed."
-          schema:
-            $ref: "#/definitions/controllerError"
-  /controller/ambientTemperature:
+          description: "Send CORS info innheader."
+  /controller/ambient/temperature:
     get:
       tags:
       - "Controller adjustment"
@@ -1259,22 +1394,57 @@ paths:
           description: "The current ambient temperature"
           schema:
             $ref: "#/definitions/controllerCurrentValue"
-  /controller/circulatingGasPressure:
+    put:
+      tags:
+      - "Controller adjustment"
+      summary: "Change the current ambient temperature adjustment values."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "One or more temperature adjustment values to change"
+        required: true
+        schema:
+          $ref: "#/definitions/controllerMinMax"
+      responses:
+        200:
+          description: "The values were changed successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        422:
+          description: "The given values were malformed."
+          schema:
+            $ref: "#/definitions/controllerError"
+        423:
+          description: "The resource is not accessible, because direct control has been enabled."
+          schema:
+            $ref: "#/definitions/standardResponse"
+    options:
+      tags:
+      - "Controller adjustment"
+      summary: "Respond to AJAX request CORS information request."
+      responses:
+        200:
+          description: "Send CORS info innheader."
+  /controller/sensor/pressure:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get current circulating gas pressure adjustment values."
+      summary: "Get current sensor pressure adjustment values."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current circulating gas pressure adjustment values."
+          description: "The current sensor pressure adjustment values."
           schema:
             $ref: "#/definitions/controllerMinMaxResponse"
     put:
       tags:
       - "Controller adjustment"
-      summary: "Change the current circulating gas pressure adjustment values."
+      summary: "Change the current sensor pressure adjustment values."
       consumes:
       - "application/json"
       produces:
@@ -1295,7 +1465,14 @@ paths:
           description: "The given values were malformed."
           schema:
             $ref: "#/definitions/controllerError"
-  /controller/samplePressure:
+    options:
+      tags:
+      - "Controller adjustment"
+      summary: "Respond to AJAX request CORS information request."
+      responses:
+        200:
+          description: "Send CORS info innheader."
+  /controller/sample/pressure:
     get:
       tags:
       - "Controller adjustment"
@@ -1307,7 +1484,38 @@ paths:
           description: "The current sample pressure"
           schema:
             $ref: "#/definitions/controllerCurrentValue"
-  /controller/ambientPressure:
+    put:
+      tags:
+      - "Controller adjustment"
+      summary: "Change the current sample pressure adjustment values."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "One or more pressure adjustment values to change"
+        required: true
+        schema:
+          $ref: "#/definitions/controllerMinMax"
+      responses:
+        200:
+          description: "The values were changed successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        422:
+          description: "The given values were malformed."
+          schema:
+            $ref: "#/definitions/controllerError"
+    options:
+      tags:
+      - "Controller adjustment"
+      summary: "Respond to AJAX request CORS information request."
+      responses:
+        200:
+          description: "Send CORS info innheader."
+  /controller/ambient/pressure:
     get:
       tags:
       - "Controller adjustment"
@@ -1319,22 +1527,53 @@ paths:
           description: "The current ambient pressure"
           schema:
             $ref: "#/definitions/controllerCurrentValue"
-  /controller/circulatingGasHumidity:
+    put:
+      tags:
+      - "Controller adjustment"
+      summary: "Change the current ambient pressure adjustment values."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "One or more pressure adjustment values to change"
+        required: true
+        schema:
+          $ref: "#/definitions/controllerMinMax"
+      responses:
+        200:
+          description: "The values were changed successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        422:
+          description: "The given values were malformed."
+          schema:
+            $ref: "#/definitions/controllerError"
+    options:
+      tags:
+      - "Controller adjustment"
+      summary: "Respond to AJAX request CORS information request."
+      responses:
+        200:
+          description: "Send CORS info innheader."
+  /controller/sensor/humidity:
     get:
       tags:
       - "Controller adjustment"
-      summary: "Get current circulating gas humidity adjustment values."
+      summary: "Get current sensor humidity adjustment values."
       produces:
       - "application/json"
       responses:
         200:
-          description: "The current circulating gas humidity adjustment values."
+          description: "The current sensor humidity adjustment values."
           schema:
             $ref: "#/definitions/controllerMinMaxResponse"
     put:
       tags:
       - "Controller adjustment"
-      summary: "Change the current circulating gas humidity adjustment values."
+      summary: "Change the current sensor humidity adjustment values."
       consumes:
       - "application/json"
       produces:
@@ -1355,7 +1594,14 @@ paths:
           description: "The given values were malformed."
           schema:
             $ref: "#/definitions/controllerError"
-  /controller/sampleHumidity:
+    options:
+      tags:
+      - "Controller adjustment"
+      summary: "Respond to AJAX request CORS information request."
+      responses:
+        200:
+          description: "Send CORS info innheader."
+  /controller/sample/humidity:
     get:
       tags:
       - "Controller adjustment"
@@ -1367,7 +1613,7 @@ paths:
           description: "The current sample humidity"
           schema:
             $ref: "#/definitions/controllerCurrentValue"
-  /controller/ambientHumidity:
+  /controller/ambient/humidity:
     get:
       tags:
       - "Controller adjustment"
@@ -1379,42 +1625,6 @@ paths:
           description: "The current ambient humidity"
           schema:
             $ref: "#/definitions/controllerCurrentValue"
-  /controller/ionisation:
-    get:
-      tags:
-      - "Controller adjustment"
-      summary: "Get the current status of ionisation / XAPPI (Atmospheric Pressure soft X-ray Photon Ionisation Module)."
-      produces:
-      - "application/json"
-      responses:
-        200:
-          description: "The current status of ionisation / XAPPI."
-          schema:
-            $ref: "#/definitions/controllerIonisationStatus"
-    put:
-      tags:
-      - "Controller adjustment"
-      summary: "Change the current status of ionisation / XAPPI."
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "The new status for ionisation / XAPPI."
-        required: true
-        schema:
-          $ref: "#/definitions/controllerIonisationStatus"
-      responses:
-        200:
-          description: "The status was changed successfully"
-          schema:
-            $ref: "#/definitions/standardResponse"
-        422:
-          description: "The given values were malformed."
-          schema:
-            $ref: "#/definitions/controllerError"
   
   /results:
     get:
@@ -1828,6 +2038,19 @@ paths:
               type: "string"
         404:
           description: "No system errors."
+  /system/errors/valueLimits:
+    get:
+      tags:
+      - "System Information"
+      summary: "Get a list of all possible value limit errors and their state."
+      description: "Get a list of all possible value limit errors and whether they have been triggered after staring last scan. These are automatically reset when a new scan is started."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "An object of value limit error names and their states."
+          schema:
+            $ref: "#/definitions/systemErrorsValuesLimits"
   /system/reset:
     get:
       tags:
@@ -2409,24 +2632,13 @@ definitions:
     allOf:
     - $ref: "#/definitions/controllerMinMax"
     - $ref: "#/definitions/controllerCurrentValue"
-  controllerSetpoint:
-    description: "Defines a setpoint value and limits for a controller."
-    allOf:
-    - $ref: "#/definitions/controllerMinMax"
-    - type: "object"
-      properties:
-        setpoint:
-          type: "number"
-          description: "The setpoint where the controller aims to be."
-  controllerSetpointResponse:
-    description: "Defines a setpoint value, limits for a controller and its current value"
-    allOf:
-    - $ref: "#/definitions/controllerSetpoint"
-    - $ref: "#/definitions/controllerCurrentValue"
   controllerPid:
     type: "object"
     description: "Defines values set for a PID controller."
     properties:
+      setpoint:
+        type: "number"
+        description: "The setpoint to which the PID controller aims to get the value."
       p:
         type: "number"
         description: "The PID controller proportional term."
@@ -2474,13 +2686,6 @@ definitions:
               message:
                 type: "string"
                 description: "A human readable description of the error."
-  controllerIonisationStatus:
-    type: "object"
-    description: "Status of ionisation / XAPPI."
-    properties:
-      enabled:
-        type: "boolean"
-        description: "True if ionisation / XAPPI is enabled."
         
   scanResultList:
     type: "object"
@@ -2652,9 +2857,93 @@ definitions:
               example: "- Updated some stuff\n- Bugfixes"
   systemDeviceList:
     type: "array"
-    description: "Lis of external devices plugged into the system."
+    description: "List of external devices plugged into the system."
     items:
       $ref: "#/definitions/systemDevice"
+  systemErrorsValuesLimits:
+    type: "object"
+    description: "An object of value limit error names and their states."
+    properties:
+      ambientPressureUnderMin:
+        type: "boolean"
+      ambientPressureOverMax:
+        type: "boolean"
+      ambientHumidityUnderMin:
+        type: "boolean"
+      ambientHumidityOverMax:
+        type: "boolean"
+      ambientTemperatureUnderMin:
+        type: "boolean"
+      ambientTemperatureOverMax:
+        type: "boolean"
+      fetTemperatureUnderMin:
+        type: "boolean"
+      fetTemperatureOverMax:
+        type: "boolean"
+      sampleFlowUnderMin:
+        type: "boolean"
+      sampleFlowOverMax:
+        type: "boolean"
+      sampleTemperatureUnderMin:
+        type: "boolean"
+      sampleTemperatureOverMax:
+        type: "boolean"
+      samplePressureUnderMin:
+        type: "boolean"
+      samplePressureOverMax:
+        type: "boolean"
+      sampleHumidityUnderMin:
+        type: "boolean"
+      sampleHumidityOverMax:
+        type: "boolean"
+      sensorFlowUnderMin:
+        type: "boolean"
+      sensorFlowOverMax:
+        type: "boolean"
+      sensorTemperatureUnderMin:
+        type: "boolean"
+      sensorTemperatureOverMax:
+        type: "boolean"
+      sensorPressureUnderMin:
+        type: "boolean"
+      sensorPressureOverMax:
+        type: "boolean"
+      sensorHumidityUnderMin:
+        type: "boolean"
+      sensorHumidityOverMax:
+        type: "boolean"
+      sampleHeaterTemperatureUnderMin:
+        type: "boolean"
+      sampleHeaterTemperatureOverMax:
+        type: "boolean"
+      sensorHeaterTemperatureUnderMin:
+        type: "boolean"
+      sensorHeaterTemperatureOverMax:
+        type: "boolean"
+      ambientTemperatureOverSafety:
+        type: "boolean"
+      ambientTemperatureOverDanger:
+        type: "boolean"
+      fetTemperatureOverSafety:
+        type: "boolean"
+      fetTemperatureOverDanger:
+        type: "boolean"
+      sensorHeaterTemperatureOverSafety:
+        type: "boolean"
+      sensorHeaterTemperatureOverDanger:
+        type: "boolean"
+      sampleHeaterTemperatureOverSafety:
+        type: "boolean"
+      sampleHeaterTemperatureOverDanger:
+        type: "boolean"
+      sampleTemperatureOverSafety:
+        type: "boolean"
+      sampleTemperatureOverDanger:
+        type: "boolean"
+      sensorTemperatureOverSafety:
+        type: "boolean"
+      sensorTemperatureOverDanger:
+        type: "boolean"
   systemResetParameters:
     description: "Parameters for resetting the system."
     type: "object"
