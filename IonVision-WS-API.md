@@ -5,6 +5,48 @@ any input through the WebSocket API.
 
 The HTTP API endpoints can be browsed at https://olfactomics.github.io/IonVision-API-docs/.
 
+## Index
+ - [scan.started](#scanstarted)
+ - [scan.stopped](#scanstopped)
+ - [scan.finished](#scanfinished)
+ - [scan.resultsProcessed](#scanresultsprocessed)
+ - [scan.progress](#scanprogress)
+ - [scan.usernameChanged](#scanusernamechanged)
+ - [scan.commentsChanged](#scancommentschanged)
+ - [scope.started](#scopestarted)
+ - [scope.stopped](#scopestopped)
+ - [scope.data](#scopedata)
+ - [scope.parametersChanged](#scopeparameterschanged)
+ - [parameter.currentChanged](#parametercurrentchanged)
+ - [parameter.setupCurrentStarted](#parametersetupcurrentstarted)
+ - [parameter.setupCurrentFinished](#parametersetupcurrentfinished)
+ - [parameter.preloadStarted](#parameterpreloadstarted)
+ - [parameter.preloadFinished](#parameterpreloadfinished)
+ - [parameter.edited](#parameteredited)
+ - [parameter.listChanged](#parameterlistchanged)
+ - [project.currentChanged](#projectcurrentchanged)
+ - [project.setupCurrentStarted](#projectsetupcurrentstarted)
+ - [project.setupCurrentFinished](#projectsetupcurrentfinished)
+ - [project.edited](#projectedited)
+ - [project.listChanged](#projectlistchanged)
+ - [controllers.status](#controllersstatus)
+ - [device.standbyButtonPressed](#devicestandbybuttonpressed)
+ - [device.shutdown](#deviceshutdown)
+ - [message.error](#messageerror)
+ - [message.limitError](#messagelimiterror)
+ - [message.timeChanged](#messagetimechanged)
+ - [backup.started](#backupstarted)
+ - [backup.progress](#backupprogress)
+ - [backup.finished](#backupfinished)
+ - [restore.started](#restorestarted)
+ - [restore.progress](#restoreprogress)
+ - [restore.finished](#restorefinished)
+ - [reset.started](#resetstarted)
+ - [reset.finished](#resetfinished)
+ - [update.started](#updatestarted)
+ - [update.progress](#updateprogress)
+ - [update.finished](#updatefinished)
+
 ## IonVision WebSocket messages
 This listing contains all WebSocket messages IonVision can send. All of the messages have the same
 basic format, where they are JSON objects with `type`, `time` and `body` keys. `type` is always an
@@ -408,20 +450,6 @@ A error or warning message from the back-end.
 }
 ```
 
-### message.timeChanged
-The system time of the device has changed. This also affects the WebSocket message timestamps. The
-message timestamp and the time listed in the body are the same.
-* `time` {number} The new current system time as an Unix timestamp in milliseconds.
-
-```json
-{
-    "type": "message.timeChanged",
-    "body": {
-        "time": 123456
-    }
-}
-```
-
 ### message.limitError
 An user set or safety limit has been crossed. The message always contains every possible limit error
 and whether they are off (false) or on (true).
@@ -471,6 +499,20 @@ and whether they are off (false) or on (true).
         "sampleTemperatureOverDanger": false,
         "circulatingTemperatureOverSafety": false,
         "circulatingTemperatureOverDanger": false
+    }
+}
+```
+
+### message.timeChanged
+The system time of the device has changed. This also affects the WebSocket message timestamps. The
+message timestamp and the time listed in the body are the same.
+* `time` {number} The new current system time as an Unix timestamp in milliseconds.
+
+```json
+{
+    "type": "message.timeChanged",
+    "body": {
+        "time": 123456
     }
 }
 ```
