@@ -632,3 +632,39 @@ A process to update the system software of the device has finished successfully.
     "body": {}
 }
 ```
+
+### cloud.sessionStart
+A new Olfactomics cloud session has been established. All cloud functionality should be enabled after this message.
+```json
+{
+    "type": "cloud.sessionStart",
+    "body": {}
+}
+```
+
+### cloud.sessionEnd
+The active Olfactomics cloud session has ended. The cloud functionality of the device will be disabled after this until a new session is started.
+```json
+{
+    "type": "cloud.sessionEnd",
+    "body": {}
+}
+```
+
+### cloud.connectionError
+There has been an error in the Olfactomics cloud connection. Cloud functionality might not work until a cloud.connectionRestored is sent.
+```json
+{
+    "type": "cloud.connectionError",
+    "body": {}
+}
+```
+
+### cloud.connectionRestored
+Connection to Olfactomics cloud has been restored after an error. 
+```json
+{
+    "type": "cloud.connectionRestored",
+    "body": {}
+}
+```

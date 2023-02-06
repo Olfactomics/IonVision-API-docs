@@ -1,10 +1,10 @@
 swagger: "2.0"
 info:
   description: |
-    The IonVision HTTP API definition.
+    The IonVision HTTP API definition. Documents the API of system software version 1.5.0.
 
-    For more informaton about the IonVision API, see the full repository https://github.com/Olfactomics/IonVision-API-docs.
-  version: "0.3.4"
+    For more information about the IonVision API, see the full repository https://github.com/Olfactomics/IonVision-API-docs.
+  version: "1.5.0"
   title: "IonVision HTTP API"
 basePath: "/api"
 tags:
@@ -107,7 +107,7 @@ paths:
       - "application/json"
       produces:
       - "application/json"
-      parameters: 
+      parameters:
       - in: "body"
         name: "body"
         description: "The new comments object to replace the old one."
@@ -146,7 +146,7 @@ paths:
       - "application/json"
       produces:
       - "application/json"
-      parameters: 
+      parameters:
       - in: "body"
         name: "body"
         description: "The new username to replace the old one."
@@ -162,7 +162,7 @@ paths:
           description: "A blocking operation is ongoing."
           schema:
             $ref: "#/definitions/standardResponse"
-            
+
   /scope:
     get:
       tags:
@@ -172,11 +172,11 @@ paths:
       - "application/json"
       responses:
         200:
-          description: "The device is in scope mode. Includes the latest results once one full scan has elapsed."
+          description: "The device is in scope mode. This is returned even if the scope mode is stopping but has not yet fully stopped."
           schema:
             $ref: "#/definitions/scanInformation"
         404:
-          description: "The device is not in scope mode."
+          description: "The device is not in scope mode. This is only returned after the scope mode fully stops."
           schema:
             $ref: "#/definitions/standardResponse"
     post:
@@ -203,7 +203,7 @@ paths:
       - "application/json"
       responses:
         201:
-          description: "The device is now moving to scope mode."
+          description: "The device is now stopping scope mode when possible. The change might not be instantaneous."
           schema:
             $ref: "#/definitions/standardResponse"
         404:
@@ -348,7 +348,7 @@ paths:
       - "application/json"
       produces:
       - "application/json"
-      parameters: 
+      parameters:
       - in: "body"
         name: "body"
         description: "The definition object of the new parameter."
@@ -504,7 +504,97 @@ paths:
           description: "A parameter with the given ID doesn't exist"
           schema:
             $ref: "#/definitions/standardResponse"
-            
+  /parameter/{id}/gasDetection:
+    get:
+      tags:
+      - "Parameters"
+      summary: "Get a list of gases that this parameter preset can be used to detect."
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the parameter preset."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "The list of gas names. The list is empty if no gases can be detected using this parameter preset."
+          schema:
+            $ref: "#/definitions/parameterGasDetectionList"
+        404:
+          description: "A parameter with the given ID doesn't exist"
+          schema:
+            $ref: "#/definitions/standardResponse"
+
+  /parameterTemplate:
+    get:
+      tags:
+      - "Parameters"
+      summary: "Get a list of parameter templates available on the device."
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "search"
+        description: "Search parameter preset templates based on their name."
+        required: false
+        type: "string"
+      - in: "query"
+        name: "gas_detection"
+        description: "Search only parameter presets that are built to be used with the built-in gas detection for certain gases or only presets that are not meant for gas detection."
+        required: false
+        type: "boolean"
+      responses:
+        200:
+          description: "List of parameter preset templates filtered with the query in the URL."
+          schema:
+            $ref: "#/definitions/parameterTemplateList"
+  /parameterTemplate/{unique_name}:
+    get:
+      tags:
+      - "Parameters"
+      summary: "Get the contents of a parameter preset template."
+      produces:
+      - "application/json"
+      parameters:
+      - name: "unique_name"
+        in: "path"
+        description: "The unique name of the requested template."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "The parameter preset template."
+          schema:
+            type: "object"
+        404:
+          description: "A template with the given name doesn't exist"
+          schema:
+            $ref: "#/definitions/standardResponse"
+  /parameterTemplate/{unique_name}/metadata:
+    get:
+      tags:
+      - "Parameters"
+      summary: "Get the metadata of a single parameter preset template."
+      produces:
+      - "application/json"
+      parameters:
+      - name: "unique_name"
+        in: "path"
+        description: "The unique name of the requested template."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "The metadata of the parameter preset template."
+          schema:
+            $ref: "#/definitions/parameterTemplateMetadata"
+        404:
+          description: "A template with the given name doesn't exist"
+          schema:
+            $ref: "#/definitions/standardResponse"
+
   /currentProject:
     get:
       tags:
@@ -575,7 +665,7 @@ paths:
       - "application/json"
       produces:
       - "application/json"
-      parameters: 
+      parameters:
       - in: "body"
         name: "body"
         description: "The definition object of the new project."
@@ -633,7 +723,7 @@ paths:
         in: "path"
         description: "The name of the project that should be updated."
         required: true
-        type: "string" 
+        type: "string"
       - in: "body"
         name: "body"
         description: "The definition object of the updated project."
@@ -668,7 +758,7 @@ paths:
       description: "Removes a project from the device if there are no parameters or results depending on it. If there are parameters or results in the project, returns 403. The scan results that belong to this project can be quickly found using the /project/{name}/result endpoint."
       produces:
       - "application/json"
-      parameters: 
+      parameters:
       - name: "name"
         in: "path"
         description: "The name of the project to delete."
@@ -746,7 +836,7 @@ paths:
         in: "path"
         description: "The name of the updated project."
         required: true
-        type: "string" 
+        type: "string"
       - in: "body"
         name: "body"
         description: "The new parameter sequence for this project."
@@ -1701,6 +1791,11 @@ paths:
         description: "Get only limited metadata of the results instead of full result objects."
         required: false
         type: "boolean"
+      - in: "query"
+        name: "ids"
+        description: "List of result IDs to query, separated by a comma (,). Results with a matching ID and that match all other queries will be returned."
+        required: false
+        type: "string"
       responses:
         200:
           description: "A list of scan results. If Accept header is application/zip, return a zip file instead."
@@ -1722,6 +1817,28 @@ paths:
           description: "Invalid query parameters. For example negative page."
           schema:
             $ref: "#/definitions/standardResponse"
+    delete:
+      tags:
+      - "Results"
+      summary: "Delete multiple results simulatneously."
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "List of result IDs to delete. All of the results must exist."
+        required: true
+        schema:
+          $ref: "#/definitions/scanResultsDeleteBody"
+      responses:
+        200:
+          description: "All of the resulst were deleted succssfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        404:
+          description: "None of the results were deleted because one or more of them didn't exist."
+          schema:
+            $ref: "#/definitions/standardResponse"
   /results/latest:
     get:
       tags:
@@ -1735,6 +1852,22 @@ paths:
           description: "The data object of latest scan result."
           schema:
             $ref: "#/definitions/scanResult"
+        404:
+          description: "There are no scan results stored on the device."
+          schema:
+            $ref: "#/definitions/standardResponse"
+  /results/latest/gasDetection:
+    get:
+      tags:
+      - "Results"
+      summary: "Get built-in gas detection results for the latest scan result."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "A list of detected gas names. An empty array if no gases were detected."
+          schema:
+            $ref: "#/definitions/scanResultGasDetection"
         404:
           description: "There are no scan results stored on the device."
           schema:
@@ -1767,7 +1900,7 @@ paths:
       summary: "Remove a scan result from the device."
       produces:
       - "application/json"
-      parameters: 
+      parameters:
       - name: "id"
         in: "path"
         description: "The ID of the scan result."
@@ -1891,6 +2024,28 @@ paths:
           description: "The JSON object given as the body of the request was malformed."
           schema:
             $ref: "#/definitions/parameterSaveError"
+  /results/id/{id}/gasDetection:
+    get:
+      tags:
+      - "Results"
+      summary: "Get built-in gas detection results for a scan result."
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the scan result."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "A list of detected gas names. An empty array if no gases were detected."
+          schema:
+            $ref: "#/definitions/scanResultGasDetection"
+        404:
+          description: "A scan result with the given ID doesn't exist."
+          schema:
+            $ref: "#/definitions/standardResponse"
 
   /system/status:
     get:
@@ -1944,7 +2099,7 @@ paths:
           description: "A another calibration process was already started and is still ongoing or a blocking operation is ongoing."
           schema:
             $ref: "#/definitions/standardResponse"
-        
+
   /system/devices:
     get:
       tags:
@@ -2131,7 +2286,7 @@ paths:
           description: "List of software licenses the device uses."
           schema:
             $ref: "#/definitions/systemLicenseList"
-            
+
   /settings/clock:
     get:
       tags:
@@ -2247,6 +2402,53 @@ paths:
           description: "A list variants supported by the layout."
           schema:
             $ref: "#/definitions/settingsKeyboardLayoutInfo"
+  /settings/dataSaveLocations:
+    get:
+      tags:
+      - "Settings"
+      summary: "Get a list of external locations data is currently saved to."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "List of external locations data is currently saved to."
+          schema:
+            $ref: "#/definitions/settingsSaveLocationInfo"
+    put:
+      tags:
+      - "Settings"
+      summary: "Set the current external data saving locations."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The new external data saving locations."
+        required: true
+        schema:
+          $ref: "#/definitions/settingsSaveLocationInfo"
+      responses:
+        200:
+          description: "The data saving locations were updated successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        409:
+          description: "A blocking operation is ongoing."
+          schema:
+            $ref: "#/definitions/standardResponse"
+    options:
+      tags:
+      - "Settings"
+      summary: "Get all supported external data saving locations."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "A list of all of the  supported external data saving locations."
+          schema:
+            $ref: "#/definitions/settingsSaveLocationOptions"
 
   /graphColour:
     get:
@@ -2315,6 +2517,74 @@ paths:
       responses:
         200:
           description: "The colour scale was removed successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+
+  /olfactomics/session:
+    get:
+      tags:
+      - "Olfactomics Cloud"
+      summary: "Get information about the current Olfactomics cloud session."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Information about the current Olfactomics cloud session."
+          schema:
+            $ref: "#/definitions/olfactomicsSessionInfo"
+        404:
+          description: "No session with Olfactomics cloud."
+          schema:
+            $ref: "#/definitions/standardResponse"
+    post:
+      tags:
+      - "Olfactomics Cloud"
+      summary: "Log the device in to Olfactomics cloud using a linking token."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The linking token used to log in."
+        required: true
+        schema:
+          $ref: "#/definitions/olfactomicsLogin"
+      responses:
+        200:
+          description: "The login was successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        401:
+          description: "The linking token was rejected."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        409:
+          description: "A blocking operation is ongoing."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        503:
+          description: "Unexpected communication error between the device and Olfactomics cloud."
+          schema:
+            $ref: "#/definitions/standardResponse"
+    delete:
+      tags:
+      - "Olfactomics Cloud"
+      summary: "Log out of Olfactomics cloud and end the active session."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Logged out successfully."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        404:
+          description: "No session with Olfactomics cloud."
+          schema:
+            $ref: "#/definitions/standardResponse"
+        409:
+          description: "A blocking operation is ongoing."
           schema:
             $ref: "#/definitions/standardResponse"
 
@@ -2428,7 +2698,7 @@ paths:
         409:
           description: "A blocking operation is ongoing."
           schema:
-            $ref: "#/definitions/standardResponse"      
+            $ref: "#/definitions/standardResponse"
   /shutdown:
     post:
       tags:
@@ -2450,7 +2720,7 @@ paths:
           description: "A blocking operation is ongoing."
           schema:
             $ref: "#/definitions/standardResponse"
-      
+
 definitions:
   standardResponse:
     type: "object"
@@ -2477,7 +2747,7 @@ definitions:
   scanComments:
     type: "object"
     description: "The comment object of a scan. A freeform JSON object."
-    
+
   scopeResults:
     type: "object"
     description: "Result data object from the scope mode"
@@ -2518,7 +2788,7 @@ definitions:
         type: "integer"
       circulatingGasFlowControl:
         type: "integer"
-    
+
   userInfo:
     type: "object"
     properties:
@@ -2526,7 +2796,7 @@ definitions:
         type: "string"
         description: "The username to add to scan results."
         example: "John Doe"
-    
+
   currentParameter:
     type: "object"
     description: "The identifying information of the current parameter."
@@ -2590,7 +2860,7 @@ definitions:
         example: "2018-11-09T07:37:00Z"
       Description:
         type: "string"
-        description: "The description text of the parameter." 
+        description: "The description text of the parameter."
   parameterSaveError:
     type: "object"
     description: "Error descriping a parsing or validation error while processing a parameter JSON."
@@ -2609,7 +2879,47 @@ definitions:
     items:
       type: "string"
       description: "The ID of a scan result that can be found from the system."
-        
+  parameterGasDetectionList:
+    type: "object"
+    description: "Object with names of gases that can be detected that map to lists of errors that stop parameter preset from being usable for detecting the gas. If an error list is empty, the built-in gas detection can work with this parameter preset for that gas."
+    additionalProperties:
+      type: "array"
+      description: "Array of error ID strings."
+      items:
+        type: "string"
+    example:
+      d2: []
+      d3:
+      - "NOT_ENOUGH_UCV_VALUES"
+      d4:
+      - "NOT_ENOUGH_UCV_VALUES"
+  parameterTemplateMetadata:
+    type: "object"
+    description: "Meta information about an individual parameter preset template."
+    properties:
+      id:
+        type: "string"
+        description: "The unique, machine usable identification of the template. This can be used to reference a template in code."
+      name:
+        type: "string"
+        description: "The English, human readable name of template."
+      description:
+        type: "string"
+        description: "The English, human readable description of template providing additional information about how and when this template could be used."
+      keywords:
+        type: "array"
+        description: "An array of human-readable keywords that can be used to group templates and make them easier to recognize."
+        items:
+          type: "string"
+      gasDetection:
+        type: "boolean"
+        description: "True if the template is built to be used with the built-in gas detection."
+  parameterTemplateList:
+    type: "array"
+    description: "List parameter preset template information objects."
+    items:
+      $ref: "#/definitions/parameterTemplateMetadata"
+
   currentProject:
     type: "object"
     properties:
@@ -2718,9 +3028,24 @@ definitions:
         type: "array"
         items:
           $ref: "#/definitions/scanResult"
+  scanResultsDeleteBody:
+    type: "object"
+    description: "Definition for what results to delete when deleting multiple results."
+    properties:
+      ids:
+        type: "array"
+        description: "List of result IDs."
+        items:
+          type: "string"
   scanResult:
     type: "object"
     description: "The full definition object of a scan result."
+  scanResultGasDetection:
+    type: "array"
+    description: "Built-in gas detection results for a scan result."
+    items:
+      type: "string"
+      description: "Unique name of a detected gas."
   scanResultCopyBody:
     type: "object"
     description: "Settings for copying a scan result to external storage."
@@ -2729,6 +3054,7 @@ definitions:
         type: "string"
         enum:
         - "usb_storage"
+        - "olfactomics_cloud"
         description: "The type of the destination."
         example: "usb_storage"
       destination:
@@ -2738,7 +3064,7 @@ definitions:
       copyParameter:
         type: "boolean"
         description: "True if the parameter preset used for the result should also be copied."
-  
+
   systemStatus:
     type: "object"
     description: "Status information about the system."
@@ -2986,7 +3312,7 @@ definitions:
           type: "string"
           description: "The website of the software or library."
           example: "https://github.com/indutny/brorand"
-          
+
   settingsClockInfo:
     type: "object"
     description: "The current date and time settings of the system."
@@ -3038,14 +3364,14 @@ definitions:
         timezone:
           type: "string"
           description: "The name of the timezone."
-    example: 
+    example:
     - timezone: "Europe/London"
       offset: 0
     - timezone: "Europe/Helsinki"
       offset: 2
     - timezone: "Asia/Shanghai"
       offset: 8
-    
+
   settingsKeyboardInfo:
     type: "object"
     properties:
@@ -3077,6 +3403,20 @@ definitions:
         items:
           type: "string"
           description: "The name of a variant supported by the layout."
+  settingsSaveLocationInfo:
+    type: "array"
+    items:
+      type: "string"
+      description: "Identifying name of an external data saving location."
+      enum:
+      - "OLFACTOMICS_CLOUD"
+  settingsSaveLocationOptions:
+    type: "array"
+    items:
+      type: "string"
+      description: "Identifying name of an external data saving location."
+    example:
+    - "OLFACTOMICS_CLOUD"
 
   graphColourCommon:
     type: "object"
@@ -3142,6 +3482,27 @@ definitions:
     allOf:
     - $ref: "#/definitions/graphColourCommonEdited"
     - $ref: "#/definitions/graphColourColours"
+
+  olfactomicsLogin:
+    type: "object"
+    description: "Properties for logging the device in to Olfactomics cloud."
+    properties:
+      token:
+        type: "string"
+        description: "The linking token received from the cloud UI."
+  olfactomicsSessionInfo:
+    type: "object"
+    description: "The current status of an active Olfactomics cloud session."
+    properties:
+      subscription:
+        type: "string"
+        description: "The subscription name this device is logged in to."
+      deviceName:
+        type: "string"
+        description: "The name given to this device in the cloud."
+      availableSpace:
+        type: "integer"
+        description: "Available free storage space in the cloud for results and other data."
 
   backupInfo:
     description: "Metadata about backing up the device."
