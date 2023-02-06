@@ -194,7 +194,9 @@ The scope parameters have changed. The new parameters are included in the messag
         "pw": 0,
         "sampleAverages": 0,
         "sampleFlowControl": 0,
-        "circulatingGasFlowControl": 0
+        "sensorFlowControl": 0,
+        "sampleHeaterTemperatureControl": 0,
+        "sensorHeaterTemperatureControl": 0
     }
 }
 ```

@@ -2786,8 +2786,12 @@ definitions:
         type: "integer"
       sampleFlowControl:
         type: "integer"
-      circulatingGasFlowControl:
+      sensorFlowControl:
         type: "integer"
+      sampleHeaterTemperatureControl:
+        type: "number"
+      sensorHeaterTemperatureControl:
+        type: "number"
 
   userInfo:
     type: "object"
